@@ -1,0 +1,15 @@
+bin/
+obj/
+*.db
+*.db-shm
+*.db-wal
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.DS_Store
+Thumbs.db
+packages/
+TestResults/
+coverage/

@@ -1,0 +1,47 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h1 class="h3 mb-3">Dashboard</h1>
+<p class="text-muted">Data is filtered for @Model.UserName (@Model.Role).</p>
+<div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Total Customers</div><div class="fs-3">@Model.TotalCustomers</div></div></div>
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Total Leads</div><div class="fs-3">@Model.TotalLeads</div></div></div>
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Open Leads</div><div class="fs-3">@Model.OpenLeads</div></div></div>
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Total Opportunities</div><div class="fs-3">@Model.TotalOpportunities</div></div></div>
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Open Opportunities</div><div class="fs-3">@Model.OpenOpportunities</div></div></div>
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Won</div><div class="fs-3">@Model.WonOpportunities</div></div></div>
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Lost</div><div class="fs-3">@Model.LostOpportunities</div></div></div>
+    <div class="col-md-3"><div class="card kpi-card p-3"><div class="text-muted">Pipeline Value</div><div class="fs-4">@Model.TotalPipelineValue.ToString("C")</div><small>Weighted: @Model.WeightedPipelineValue.ToString("C")</small></div></div>
+</div>
+@if (Model.Role == AppRoles.Admin)
+{
+    <div class="alert alert-info">Users: @Model.TotalUsers (active @Model.ActiveUsers). Planned follow-ups: @Model.PendingFollowUpsCount.</div>
+}
+@if (Model.Role == AppRoles.Manager)
+{
+    <div class="alert alert-primary">Team pipeline @Model.TotalPipelineValue.ToString("C") · team leads @Model.TotalLeads · won deals @Model.WonOpportunities.</div>
+}
+@if (Model.Role == AppRoles.SalesExecutive)
+{
+    <div class="alert alert-success">Assigned customers @Model.TotalCustomers · assigned leads @Model.TotalLeads · upcoming follow-ups @Model.PendingFollowUpsCount.</div>
+}
+<div class="row g-3">
+    <div class="col-lg-4"><div class="card p-3"><h2 class="h6">Lead Status</h2><canvas id="leadChart"></canvas></div></div>
+    <div class="col-lg-4"><div class="card p-3"><h2 class="h6">Opportunity Pipeline</h2><canvas id="oppChart"></canvas></div></div>
+    <div class="col-lg-4"><div class="card p-3"><h2 class="h6">Monthly Sales</h2><canvas id="salesChart"></canvas></div></div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const leadLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.LeadStatusChart.Select(x => x.Label)));
+        const leadCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.LeadStatusChart.Select(x => x.Count)));
+        const oppLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OpportunityStageChart.Select(x => x.Label)));
+        const oppCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OpportunityStageChart.Select(x => x.Count)));
+        const monthLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlySalesChart.Select(x => x.MonthName)));
+        const monthAmounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlySalesChart.Select(x => x.Amount)));
+        new Chart(document.getElementById('leadChart'), { type: 'doughnut', data: { labels: leadLabels, datasets: [{ data: leadCounts }] } });
+        new Chart(document.getElementById('oppChart'), { type: 'bar', data: { labels: oppLabels, datasets: [{ label: 'Count', data: oppCounts }] } });
+        new Chart(document.getElementById('salesChart'), { type: 'line', data: { labels: monthLabels, datasets: [{ label: 'Won amount', data: monthAmounts }] } });
+    </script>
+}

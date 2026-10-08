@@ -1,0 +1,16 @@
+@model Customer
+@{
+    ViewData["Title"] = "Customer Details";
+}
+<h1 class="h3">@Model.CustomerName</h1>
+<p>@Model.CustomerCode · @Model.Status · Created @Model.CreatedDate.ToLocalTime().ToString("g") by @Model.CreatedBy</p>
+<p>@Model.Email · @Model.Phone · @Model.CompanyName · @Model.City, @Model.State</p>
+<p>@Model.Address</p>
+<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.CustomerId">Edit</a>
+<h2 class="h5 mt-4">History</h2>
+<h3 class="h6">Opportunities</h3>
+<ul>@foreach (var o in Model.Opportunities) { <li>@o.OpportunityName (@o.Stage) @o.Amount.ToString("C")</li> }</ul>
+<h3 class="h6">Follow-ups</h3>
+<ul>@foreach (var f in Model.FollowUps) { <li>@f.FollowUpDate.ToLocalTime().ToString("d") @f.FollowUpType @f.Status</li> }</ul>
+<h3 class="h6">Activities</h3>
+<ul>@foreach (var a in Model.Activities) { <li>@a.ActivityDate.ToLocalTime().ToString("d") @a.ActivityType - @a.Subject</li> }</ul>

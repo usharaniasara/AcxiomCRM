@@ -1,0 +1,99 @@
+@model UserListItemViewModel
+@{
+    ViewData["Title"] = "User Details";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">@Model.FullName</h1>
+        <small class="text-muted">ID: @Model.Id</small>
+    </div>
+    <div>
+        <a class="btn btn-outline-primary me-1" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn btn-outline-secondary me-1" asp-action="ResetPassword" asp-route-id="@Model.Id">Reset Password</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card p-3 mb-3">
+            <h5 class="card-title mb-3">Account Details</h5>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Full Name</dt>
+                <dd class="col-sm-8">@Model.FullName</dd>
+
+                <dt class="col-sm-4">Email Address</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+
+                <dt class="col-sm-4">Primary Role</dt>
+                <dd class="col-sm-8">
+                    @if (Model.Role == AppRoles.Admin) { <span class="badge text-bg-danger">Admin</span> }
+                    else if (Model.Role == AppRoles.Manager) { <span class="badge text-bg-primary">Manager</span> }
+                    else if (Model.Role == AppRoles.SalesExecutive) { <span class="badge text-bg-success">SalesExecutive</span> }
+                    else { <span class="badge text-bg-secondary">@Model.Role</span> }
+                </dd>
+
+                <dt class="col-sm-4">Account Status</dt>
+                <dd class="col-sm-8">
+                    @if (Model.IsActive) { <span class="badge text-bg-success">Active</span> }
+                    else { <span class="badge text-bg-secondary">Inactive</span> }
+                </dd>
+
+                <dt class="col-sm-4">Lockout Status</dt>
+                <dd class="col-sm-8">
+                    @if (Model.IsLockedOut)
+                    {
+                        <span class="badge text-bg-danger">Locked Out</span>
+                        if (Model.LockoutEnd.HasValue)
+                        {
+                            <span class="small text-muted ms-2">(Until @Model.LockoutEnd.Value.ToString("yyyy-MM-dd HH:mm UTC"))</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-light text-dark">Normal</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">Failed Access Attempts</dt>
+                <dd class="col-sm-8">@Model.AccessFailedCount</dd>
+
+                <dt class="col-sm-4">Created Date</dt>
+                <dd class="col-sm-8">@Model.CreatedDate.ToString("yyyy-MM-dd HH:mm")</dd>
+            </dl>
+        </div>
+
+        @if (Model.IsLockedOut)
+        {
+            <div class="card p-3 mb-3 border-warning">
+                <h5 class="card-title text-warning">Account Lockout Administrative Action</h5>
+                <p class="small text-muted">This user account is currently locked due to repeated failed login attempts.</p>
+                <form asp-action="Unlock" asp-route-id="@Model.Id" method="post">
+                    <button type="submit" class="btn btn-warning">Unlock Account Now</button>
+                </form>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5 class="card-title">Quick Actions</h5>
+            <div class="d-grid gap-2">
+                <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit Role / Details</a>
+                <a class="btn btn-outline-secondary" asp-action="ResetPassword" asp-route-id="@Model.Id">Reset User Password</a>
+                @if (Model.IsActive)
+                {
+                    <form asp-action="Deactivate" asp-route-id="@Model.Id" method="post" class="d-grid">
+                        <button type="submit" class="btn btn-outline-warning" onclick="return confirm('Deactivate user?');">Deactivate Account</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Activate" asp-route-id="@Model.Id" method="post" class="d-grid">
+                        <button type="submit" class="btn btn-outline-success">Activate Account</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>

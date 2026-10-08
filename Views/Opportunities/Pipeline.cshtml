@@ -1,0 +1,52 @@
+@model List<Opportunity>
+@{
+    ViewData["Title"] = "Pipeline View";
+    decimal weightedTotal = ViewBag.Weighted ?? 0m;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">Opportunity Pipeline</h1>
+        <small class="text-muted">Total Weighted Pipeline: <strong>@weightedTotal.ToString("C")</strong></small>
+    </div>
+    <div>
+        <a class="btn btn-outline-secondary me-2" asp-action="Index">List View</a>
+        <a class="btn btn-primary" asp-action="Create">New Opportunity</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    @foreach (var stage in CrmLists.OpportunityStages)
+    {
+        var stageOpps = Model.Where(o => o.Stage == stage).ToList();
+        var stageTotal = stageOpps.Sum(o => o.Amount);
+
+        <div class="col-md flex-fill" style="min-width: 220px;">
+            <div class="card bg-light">
+                <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                    <strong>@stage</strong>
+                    <span class="badge text-bg-primary rounded-pill">@stageOpps.Count</span>
+                </div>
+                <div class="card-body p-2" style="min-height: 400px; max-height: 70vh; overflow-y: auto;">
+                    <div class="text-muted small mb-2 text-end">Total: @stageTotal.ToString("C")</div>
+                    @foreach (var opp in stageOpps)
+                    {
+                        <div class="card mb-2 p-2 shadow-sm border-start border-4 @(opp.Stage == "Won" ? "border-success" : opp.Stage == "Lost" ? "border-danger" : "border-primary")">
+                            <h6 class="mb-1 text-truncate">
+                                <a asp-action="Details" asp-route-id="@opp.OpportunityId" class="text-decoration-none text-dark">@opp.OpportunityName</a>
+                            </h6>
+                            <div class="small text-muted">@(opp.Customer?.CustomerName ?? "No Customer")</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <span class="fw-bold text-success">@opp.Amount.ToString("C")</span>
+                                <span class="badge text-bg-secondary">@opp.Probability%</span>
+                            </div>
+                        </div>
+                    }
+                    @if (!stageOpps.Any())
+                    {
+                        <div class="text-muted text-center py-4 small">No opportunities</div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

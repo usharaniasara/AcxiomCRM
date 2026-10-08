@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AcxiomCRM</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="d-flex min-vh-100">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <aside class="sidebar p-3">
+                <a class="brand d-block mb-4 text-decoration-none" asp-controller="Dashboard" asp-action="Index">AcxiomCRM</a>
+                <nav class="nav flex-column gap-1">
+                    <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+                    <a class="nav-link" asp-controller="Customers" asp-action="Index">@(User.IsInRole(AppRoles.SalesExecutive) ? "My Customers" : "Customers")</a>
+                    <a class="nav-link" asp-controller="Leads" asp-action="Index">@(User.IsInRole(AppRoles.SalesExecutive) ? "My Leads" : "Leads")</a>
+                    <a class="nav-link" asp-controller="Opportunities" asp-action="Index">@(User.IsInRole(AppRoles.SalesExecutive) ? "My Opportunities" : "Opportunities")</a>
+                    <a class="nav-link" asp-controller="FollowUps" asp-action="Index">@(User.IsInRole(AppRoles.SalesExecutive) ? "My Follow-Ups" : "Follow-Ups")</a>
+                    <a class="nav-link" asp-controller="Activities" asp-action="Index">@(User.IsInRole(AppRoles.SalesExecutive) ? "My Activities" : "Activities")</a>
+                    <a class="nav-link" asp-controller="Reports" asp-action="Index">@(User.IsInRole(AppRoles.SalesExecutive) ? "My Reports" : "Reports")</a>
+                    @if (User.IsInRole(AppRoles.Admin))
+                    {
+                        <hr class="border-secondary" />
+                        <a class="nav-link" asp-controller="Users" asp-action="Index">Users</a>
+                        <a class="nav-link" asp-controller="Roles" asp-action="Index">Roles</a>
+                        <a class="nav-link" asp-controller="Audit" asp-action="Index">Audit Logs</a>
+                    }
+                </nav>
+            </aside>
+        }
+        <div class="flex-grow-1 d-flex flex-column">
+            <header class="topbar px-4 py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@ViewData["Title"]</strong>
+                </div>
+                <div>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <span class="me-3">@User.Identity.Name
+                            @if (User.IsInRole(AppRoles.Admin)) { <span class="badge text-bg-danger">Admin</span> }
+                            else if (User.IsInRole(AppRoles.Manager)) { <span class="badge text-bg-primary">Manager</span> }
+                            else if (User.IsInRole(AppRoles.SalesExecutive)) { <span class="badge text-bg-success">SalesExecutive</span> }
+                        </span>
+                        <a class="btn btn-sm btn-outline-secondary me-2" asp-controller="Account" asp-action="ChangePassword">Password</a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-dark">Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">Login</a>
+                    }
+                </div>
+            </header>
+            <main class="p-4 flex-grow-1">
+                <partial name="_Alerts" />
+                @RenderBody()
+            </main>
+            <footer class="px-4 py-3 text-muted border-top">AcxiomCRM — student CRM project</footer>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,61 @@
+@model FollowUpFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<input type="hidden" asp-for="FollowUpId" />
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label asp-for="CustomerId" class="form-label">Related Customer</label>
+        <select asp-for="CustomerId" asp-items="ViewBag.Customers" class="form-select">
+            <option value="">-- Select Customer (Optional) --</option>
+        </select>
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="LeadId" class="form-label">Related Lead</label>
+        <select asp-for="LeadId" asp-items="ViewBag.Leads" class="form-select">
+            <option value="">-- Select Lead (Optional) --</option>
+        </select>
+        <span asp-validation-for="LeadId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label asp-for="FollowUpDate" class="form-label">Follow-Up Date & Time *</label>
+        <input asp-for="FollowUpDate" class="form-control" type="datetime-local" />
+        <span asp-validation-for="FollowUpDate" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="FollowUpType" class="form-label">Follow-Up Type *</label>
+        <select asp-for="FollowUpType" asp-items="ViewBag.Types" class="form-select"></select>
+        <span asp-validation-for="FollowUpType" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label">Status *</label>
+        <select asp-for="Status" asp-items="ViewBag.Statuses" class="form-select"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="AssignedToUserId" class="form-label">Assigned User</label>
+    @if (User.IsInRole(AppRoles.SalesExecutive))
+    {
+        <input type="hidden" asp-for="AssignedToUserId" />
+        <input class="form-control" value="@User.Identity?.Name" disabled />
+    }
+    else
+    {
+        <select asp-for="AssignedToUserId" asp-items="ViewBag.Users" class="form-select">
+            <option value="">-- Unassigned --</option>
+        </select>
+    }
+    <span asp-validation-for="AssignedToUserId" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Remarks" class="form-label">Remarks *</label>
+    <textarea asp-for="Remarks" class="form-control" rows="3" placeholder="Enter follow-up purpose, discussion points or notes..."></textarea>
+    <span asp-validation-for="Remarks" class="text-danger"></span>
+</div>

@@ -1,0 +1,52 @@
+@model PagedResult<Customer>
+@{
+    ViewData["Title"] = "Customers";
+}
+<div class="d-flex justify-content-between mb-3">
+    <h1 class="h3">Customers</h1>
+    <a class="btn btn-primary" asp-action="Create">New Customer</a>
+</div>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4"><input name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Name, email, phone, company" /></div>
+    <div class="col-md-2">
+        <select name="status" class="form-select">
+            <option value="">All statuses</option>
+            @foreach (var s in CrmLists.CustomerStatuses)
+            {
+                if (Model.Status == s)
+                {
+                    <option value="@s" selected>@s</option>
+                }
+                else
+                {
+                    <option value="@s">@s</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2"><button class="btn btn-outline-secondary">Search</button></div>
+</form>
+<table class="table table-striped bg-white">
+    <thead><tr><th>Code</th><th>Name</th><th>Email</th><th>Phone</th><th>Company</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var c in Model.Items)
+    {
+        <tr>
+            <td>@c.CustomerCode</td>
+            <td>@c.CustomerName</td>
+            <td>@c.Email</td>
+            <td>@c.Phone</td>
+            <td>@c.CompanyName</td>
+            <td>@c.Status</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@c.CustomerId">View</a> |
+                <a asp-action="Edit" asp-route-id="@c.CustomerId">Edit</a>
+                <form asp-action="Delete" asp-route-id="@c.CustomerId" method="post" class="d-inline">
+                    <button class="btn btn-link text-danger p-0" data-confirm="Deactivate this customer? Related history will be kept.">Deactivate</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@await Html.PartialAsync("_Pager", (Model.Page, Model.TotalPages, "Index"))

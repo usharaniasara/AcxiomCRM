@@ -1,0 +1,88 @@
+@model ReportResultViewModel<Opportunity>
+@{
+    ViewData["Title"] = "Opportunity Report";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">@Model.ReportTitle</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to Reports</a>
+</div>
+
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <label class="form-label small">Search</label>
+            <input name="SearchTerm" value="@Model.Filter.SearchTerm" class="form-control form-control-sm" placeholder="Opportunity name..." />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">Stage</label>
+            <select name="Stage" class="form-select form-select-sm">
+                <option value="">All Stages</option>
+                @foreach (var stage in CrmLists.OpportunityStages)
+                {
+                    if (Model.Filter.Stage == stage) { <option value="@stage" selected>@stage</option> }
+                    else { <option value="@stage">@stage</option> }
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">Status</label>
+            <select name="Status" class="form-select form-select-sm">
+                <option value="">All Statuses</option>
+                @foreach (var status in CrmLists.OpportunityStatuses)
+                {
+                    if (Model.Filter.Status == status) { <option value="@status" selected>@status</option> }
+                    else { <option value="@status">@status</option> }
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label small">Start Date</label>
+            <input type="date" name="StartDate" value="@(Model.Filter.StartDate?.ToString("yyyy-MM-dd"))" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-sm btn-primary w-100">Apply Filter</button>
+        </div>
+    </div>
+</form>
+
+<div class="alert alert-info d-flex justify-content-between">
+    <span>Total Deals: <strong>@Model.TotalCount</strong></span>
+    <span>Total Deal Amount: <strong>@Model.SummaryTotalValue.ToString("C")</strong></span>
+    <span>Weighted Pipeline Value: <strong>@Model.SummaryWeightedValue.ToString("C")</strong></span>
+</div>
+
+<table class="table table-striped bg-white align-middle">
+    <thead>
+        <tr>
+            <th>Opportunity Name</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Stage</th>
+            <th>Probability</th>
+            <th>Close Date</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model.Items)
+        {
+            <tr>
+                <td><strong>@o.OpportunityName</strong></td>
+                <td>@(o.Customer?.CustomerName ?? "-")</td>
+                <td>@o.Amount.ToString("C")</td>
+                <td><span class="badge text-bg-info">@o.Stage</span></td>
+                <td>@o.Probability%</td>
+                <td>@o.ExpectedCloseDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    @if (o.Status == "Won") { <span class="badge text-bg-success">Won</span> }
+                    else if (o.Status == "Open") { <span class="badge text-bg-primary">Open</span> }
+                    else { <span class="badge text-bg-danger">Lost</span> }
+                </td>
+                <td>@(o.AssignedTo?.FullName ?? "Unassigned")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_Pager", (Model.Page, Model.TotalPages, "Opportunities"))

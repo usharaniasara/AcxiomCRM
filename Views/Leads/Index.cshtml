@@ -1,0 +1,36 @@
+@model PagedResult<Lead>
+@{
+    ViewData["Title"] = "Leads";
+}
+<div class="d-flex justify-content-between mb-3">
+    <h1 class="h3">Leads</h1>
+    <a class="btn btn-primary" asp-action="Create">New Lead</a>
+</div>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3"><input name="searchTerm" value="@Model.SearchTerm" class="form-control" placeholder="Lead name or company" /></div>
+    <div class="col-md-2"><select name="status" asp-items="ViewBag.Statuses" class="form-select"><option value="">All statuses</option></select></div>
+    <div class="col-md-3"><select name="assignedToUserId" asp-items="ViewBag.Users" class="form-select"><option value="">All assignees</option></select></div>
+    <div class="col-md-2"><button class="btn btn-outline-secondary">Filter</button></div>
+</form>
+<table class="table table-striped bg-white">
+    <thead><tr><th>Code</th><th>Name</th><th>Company</th><th>Status</th><th>Assigned</th><th>Value</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var l in Model.Items)
+    {
+        <tr>
+            <td>@l.LeadCode</td>
+            <td>@l.LeadName</td>
+            <td>@l.CompanyName</td>
+            <td>@l.Status</td>
+            <td>@l.AssignedTo?.FullName</td>
+            <td>@l.ExpectedValue.ToString("C")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@l.LeadId">View</a> |
+                <a asp-action="Edit" asp-route-id="@l.LeadId">Edit</a> |
+                <a asp-action="Convert" asp-route-id="@l.LeadId">Convert</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@await Html.PartialAsync("_Pager", (Model.Page, Model.TotalPages, "Index"))

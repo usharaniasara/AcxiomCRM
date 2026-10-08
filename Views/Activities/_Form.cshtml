@@ -1,0 +1,67 @@
+@model ActivityFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<input type="hidden" asp-for="ActivityId" />
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label asp-for="ActivityType" class="form-label">Activity Type *</label>
+        <select asp-for="ActivityType" asp-items="ViewBag.Types" class="form-select"></select>
+        <span asp-validation-for="ActivityType" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="ActivityDate" class="form-label">Activity Date & Time *</label>
+        <input asp-for="ActivityDate" class="form-control" type="datetime-local" />
+        <span asp-validation-for="ActivityDate" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label">Status *</label>
+        <select asp-for="Status" asp-items="ViewBag.Statuses" class="form-select"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Subject" class="form-label">Subject *</label>
+    <input asp-for="Subject" class="form-control" placeholder="e.g. Discovery call with VP of IT" />
+    <span asp-validation-for="Subject" class="text-danger"></span>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label asp-for="CustomerId" class="form-label">Related Customer</label>
+        <select asp-for="CustomerId" asp-items="ViewBag.Customers" class="form-select">
+            <option value="">-- Select Customer (Optional) --</option>
+        </select>
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="LeadId" class="form-label">Related Lead</label>
+        <select asp-for="LeadId" asp-items="ViewBag.Leads" class="form-select">
+            <option value="">-- Select Lead (Optional) --</option>
+        </select>
+        <span asp-validation-for="LeadId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="AssignedToUserId" class="form-label">Assigned User</label>
+    @if (User.IsInRole(AppRoles.SalesExecutive))
+    {
+        <input type="hidden" asp-for="AssignedToUserId" />
+        <input class="form-control" value="@User.Identity?.Name" disabled />
+    }
+    else
+    {
+        <select asp-for="AssignedToUserId" asp-items="ViewBag.Users" class="form-select">
+            <option value="">-- Unassigned --</option>
+        </select>
+    }
+    <span asp-validation-for="AssignedToUserId" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Description" class="form-label">Description</label>
+    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter activity details, outcome, or notes..."></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+</div>

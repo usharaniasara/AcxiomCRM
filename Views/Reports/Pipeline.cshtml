@@ -1,0 +1,79 @@
+@model ReportResultViewModel<Opportunity>
+@{
+    ViewData["Title"] = "Pipeline Forecast Report";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">@Model.ReportTitle</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to Reports</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card p-3 bg-light border-primary">
+            <h5 class="text-muted">Total Unweighted Pipeline</h5>
+            <div class="fs-2 text-primary fw-bold">@Model.SummaryTotalValue.ToString("C")</div>
+            <small class="text-muted">Sum of all open opportunity amounts.</small>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3 bg-light border-success">
+            <h5 class="text-muted">Total Weighted Pipeline</h5>
+            <div class="fs-2 text-success fw-bold">@Model.SummaryWeightedValue.ToString("C")</div>
+            <small class="text-muted">Calculated as: &sum; (Amount &times; Probability / 100)</small>
+        </div>
+    </div>
+</div>
+
+<div class="card p-3 mb-4">
+    <h5 class="card-title mb-3">Pipeline Stage Breakdown</h5>
+    <div class="row text-center">
+        @foreach (var stage in CrmLists.OpportunityStages.Where(s => s != "Won" && s != "Lost"))
+        {
+            var stageItems = Model.Items.Where(o => o.Stage == stage).ToList();
+            var stageTotal = stageItems.Sum(o => o.Amount);
+            var stageWeighted = stageItems.Sum(o => o.Amount * o.Probability / 100m);
+
+            <div class="col-md-4 mb-3">
+                <div class="p-3 border rounded bg-white">
+                    <h6>@stage</h6>
+                    <div class="fw-bold text-dark">Count: @stageItems.Count</div>
+                    <div class="text-muted small">Total: @stageTotal.ToString("C")</div>
+                    <div class="text-success small fw-bold">Weighted: @stageWeighted.ToString("C")</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<table class="table table-striped bg-white align-middle">
+    <thead>
+        <tr>
+            <th>Opportunity Name</th>
+            <th>Customer</th>
+            <th>Stage</th>
+            <th>Amount</th>
+            <th>Probability</th>
+            <th>Weighted Value</th>
+            <th>Close Date</th>
+            <th>Assigned To</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model.Items)
+        {
+            var weighted = o.Amount * o.Probability / 100m;
+            <tr>
+                <td><strong>@o.OpportunityName</strong></td>
+                <td>@(o.Customer?.CustomerName ?? "-")</td>
+                <td><span class="badge text-bg-info">@o.Stage</span></td>
+                <td>@o.Amount.ToString("C")</td>
+                <td>@o.Probability%</td>
+                <td class="fw-bold text-success">@weighted.ToString("C")</td>
+                <td>@o.ExpectedCloseDate.ToString("yyyy-MM-dd")</td>
+                <td>@(o.AssignedTo?.FullName ?? "Unassigned")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_Pager", (Model.Page, Model.TotalPages, "Pipeline"))

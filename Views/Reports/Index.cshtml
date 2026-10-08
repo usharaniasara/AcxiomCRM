@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "CRM Reports";
+    bool isAdmin = ViewBag.IsAdmin ?? false;
+    bool isManager = ViewBag.IsManager ?? false;
+}
+<h1 class="h3 mb-3">CRM Reports & Analytics</h1>
+<p class="text-muted">Comprehensive reporting and data analytics across sales, customer history, pipeline, follow-ups, and audit history.</p>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100 p-3 shadow-sm">
+            <h5 class="card-title text-primary">1. Customer Report</h5>
+            <p class="card-text text-muted">Analysis of customer growth, geographic distribution, and account status.</p>
+            <a class="btn btn-outline-primary mt-auto" asp-action="Customers">View Customer Report &rarr;</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-3 shadow-sm">
+            <h5 class="card-title text-success">2. Lead Report</h5>
+            <p class="card-text text-muted">Breakdown of leads by source, status transitions, and expected revenue.</p>
+            <a class="btn btn-outline-success mt-auto" asp-action="Leads">View Lead Report &rarr;</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-3 shadow-sm">
+            <h5 class="card-title text-info">3. Follow-Up Report</h5>
+            <p class="card-text text-muted">Tracking scheduled, completed, missed, and rescheduled customer follow-ups.</p>
+            <a class="btn btn-outline-info mt-auto" asp-action="FollowUps">View Follow-Up Report &rarr;</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-3 shadow-sm">
+            <h5 class="card-title text-warning text-dark">4. Opportunity Report</h5>
+            <p class="card-text text-muted">Detailed log of deals, stage progression, win rates, and close dates.</p>
+            <a class="btn btn-outline-warning text-dark mt-auto" asp-action="Opportunities">View Opportunity Report &rarr;</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-3 shadow-sm">
+            <h5 class="card-title text-primary">5. Pipeline Report</h5>
+            <p class="card-text text-muted">Weighted pipeline calculation ($Amount &times; Probability) broken down by stage.</p>
+            <a class="btn btn-outline-primary mt-auto" asp-action="Pipeline">View Pipeline Report &rarr;</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 p-3 shadow-sm">
+            <h5 class="card-title text-success">6. Conversion Report</h5>
+            <p class="card-text text-muted">Lead-to-Customer conversion rates, converted revenue, and audit history.</p>
+            <a class="btn btn-outline-success mt-auto" asp-action="Conversion">View Conversion Report &rarr;</a>
+        </div>
+    </div>
+
+    @if (isManager)
+    {
+        <div class="col-md-4">
+            <div class="card h-100 p-3 shadow-sm border-primary">
+                <h5 class="card-title text-primary">7. User Activity Report</h5>
+                <p class="card-text text-muted">Sales representative performance, completed activities, call logs, and deals.</p>
+                <a class="btn btn-primary mt-auto" asp-action="UserActivity">View User Activity &rarr;</a>
+            </div>
+        </div>
+    }
+
+    @if (isAdmin)
+    {
+        <div class="col-md-4">
+            <div class="card h-100 p-3 shadow-sm border-danger">
+                <h5 class="card-title text-danger">8. Audit Report</h5>
+                <p class="card-text text-muted">System-wide audit trail logs, login failures, lockout events, and record changes.</p>
+                <a class="btn btn-danger mt-auto" asp-action="Audit">View Audit Trail Report &rarr;</a>
+            </div>
+        </div>
+    }
+</div>

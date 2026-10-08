@@ -1,0 +1,94 @@
+@model FollowUp
+@{
+    ViewData["Title"] = "Follow-Up Details";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-0">Follow-Up #@Model.FollowUpId</h1>
+        <small class="text-muted">Scheduled: @Model.FollowUpDate.ToString("yyyy-MM-dd HH:mm")</small>
+    </div>
+    <div>
+        <a class="btn btn-outline-primary me-1" asp-action="Edit" asp-route-id="@Model.FollowUpId">Edit</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card p-3 mb-3">
+            <h5 class="card-title mb-3">Information</h5>
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Type</dt>
+                <dd class="col-sm-8"><span class="badge text-bg-secondary">@Model.FollowUpType</span></dd>
+
+                <dt class="col-sm-4">Date & Time</dt>
+                <dd class="col-sm-8">@Model.FollowUpDate.ToString("F")</dd>
+
+                <dt class="col-sm-4">Related Customer</dt>
+                <dd class="col-sm-8">@(Model.Customer?.CustomerName ?? "None")</dd>
+
+                <dt class="col-sm-4">Related Lead</dt>
+                <dd class="col-sm-8">@(Model.Lead?.LeadName ?? "None")</dd>
+
+                <dt class="col-sm-4">Status</dt>
+                <dd class="col-sm-8">
+                    @if (Model.Status == "Planned") { <span class="badge text-bg-primary">Planned</span> }
+                    else if (Model.Status == "Completed") { <span class="badge text-bg-success">Completed</span> }
+                    else if (Model.Status == "Missed") { <span class="badge text-bg-warning text-dark">Missed</span> }
+                    else { <span class="badge text-bg-secondary">Cancelled</span> }
+                </dd>
+
+                <dt class="col-sm-4">Assigned To</dt>
+                <dd class="col-sm-8">@(Model.AssignedTo?.FullName ?? "Unassigned")</dd>
+
+                <dt class="col-sm-4">Remarks</dt>
+                <dd class="col-sm-8">@Model.Remarks</dd>
+            </dl>
+        </div>
+
+        @if (Model.Status == "Planned")
+        {
+            <div class="card p-3 mb-3">
+                <h5 class="card-title mb-3">Status Actions</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    <form asp-action="Complete" asp-route-id="@Model.FollowUpId" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-success">Mark Completed</button>
+                    </form>
+                    <form asp-action="Missed" asp-route-id="@Model.FollowUpId" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-warning">Mark Missed</button>
+                    </form>
+                    <form asp-action="Cancel" asp-route-id="@Model.FollowUpId" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-secondary">Cancel Follow-Up</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card p-3">
+                <h5 class="card-title mb-3">Reschedule Follow-Up</h5>
+                <form asp-action="Reschedule" asp-route-id="@Model.FollowUpId" method="post" class="row g-2">
+                    <div class="col-md-5">
+                        <label class="form-label">New Date & Time</label>
+                        <input type="datetime-local" name="newDate" class="form-control" required />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Reschedule Remarks</label>
+                        <input type="text" name="remarks" class="form-control" placeholder="Reason for rescheduling..." />
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Reschedule</button>
+                    </div>
+                </form>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 border-danger">
+            <h5 class="card-title text-danger">Delete Follow-Up</h5>
+            <p class="small text-muted">Delete this follow-up record.</p>
+            <form asp-action="Delete" asp-route-id="@Model.FollowUpId" method="post">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this follow-up record?');">Delete Follow-Up</button>
+            </form>
+        </div>
+    </div>
+</div>

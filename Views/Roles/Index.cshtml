@@ -1,0 +1,65 @@
+@model List<Microsoft.AspNetCore.Identity.IdentityRole>
+@{
+    ViewData["Title"] = "Roles Management";
+    var primaryRoles = ViewBag.PrimaryRoles as IEnumerable<string> ?? Array.Empty<string>();
+}
+<h1 class="h3 mb-3">Roles Management</h1>
+<p class="text-muted">AcxiomCRM defines three fixed, non-overlapping primary roles for explicit server-side role-based access control (RBAC).</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 border-danger h-100">
+            <h5 class="card-title text-danger">Admin</h5>
+            <p class="card-text text-muted">Full administrative access across all CRM modules, user management, role management, security configuration, and audit logs.</p>
+            <span class="badge text-bg-danger align-self-start">Full Control</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 border-primary h-100">
+            <h5 class="card-title text-primary">Manager</h5>
+            <p class="card-text text-muted">Management oversight across all team sales records, customer history, lead pipeline, follow-ups, and sales analytics reports.</p>
+            <span class="badge text-bg-primary align-self-start">Team Management</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 border-success h-100">
+            <h5 class="card-title text-success">SalesExecutive</h5>
+            <p class="card-text text-muted">Scoped access restricted to assigned customers, leads, opportunities, follow-ups, and individual sales dashboard KPIs.</p>
+            <span class="badge text-bg-success align-self-start">Assigned Records Only</span>
+        </div>
+    </div>
+</div>
+
+<div class="card p-3">
+    <h5 class="card-title mb-3">Configured ASP.NET Core Identity Roles</h5>
+    <table class="table table-striped align-middle mb-0">
+        <thead>
+            <tr>
+                <th>Role ID</th>
+                <th>Role Name</th>
+                <th>Normalized Name</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model)
+            {
+                <tr>
+                    <td><code>@role.Id</code></td>
+                    <td><strong>@role.Name</strong></td>
+                    <td>@role.NormalizedName</td>
+                    <td>
+                        @if (primaryRoles.Contains(role.Name))
+                        {
+                            <span class="badge text-bg-info">Primary System Role</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-secondary">Custom Role</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

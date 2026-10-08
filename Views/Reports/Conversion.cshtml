@@ -1,0 +1,71 @@
+@model ReportResultViewModel<LeadConversionReportItem>
+@{
+    ViewData["Title"] = "Lead Conversion Report";
+    var convertedCount = Model.Items.Count(i => i.IsConverted);
+    var totalLeads = Model.TotalCount;
+    var conversionRate = totalLeads > 0 ? (double)convertedCount / totalLeads * 100 : 0;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">@Model.ReportTitle</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to Reports</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 text-center bg-light">
+            <h6 class="text-muted">Total Leads Evaluated</h6>
+            <div class="fs-2 fw-bold text-dark">@totalLeads</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center bg-light">
+            <h6 class="text-muted">Converted Leads</h6>
+            <div class="fs-2 fw-bold text-success">@convertedCount</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center bg-light">
+            <h6 class="text-muted">Conversion Rate</h6>
+            <div class="fs-2 fw-bold text-primary">@conversionRate.ToString("F1")%</div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-striped bg-white align-middle">
+    <thead>
+        <tr>
+            <th>Lead Code</th>
+            <th>Lead Name</th>
+            <th>Source</th>
+            <th>Expected Value</th>
+            <th>Created Date</th>
+            <th>Assigned To</th>
+            <th>Conversion Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.LeadCode</td>
+                <td><strong>@item.LeadName</strong></td>
+                <td><span class="badge text-bg-secondary">@item.Source</span></td>
+                <td>@item.ExpectedValue.ToString("C")</td>
+                <td>@item.CreatedDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.AssignedToName</td>
+                <td>
+                    @if (item.IsConverted)
+                    {
+                        <span class="badge text-bg-success">Converted</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">@item.Status</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@await Html.PartialAsync("_Pager", (Model.Page, Model.TotalPages, "Conversion"))
